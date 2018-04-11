@@ -15,6 +15,7 @@ public class PlayerPlatformerController : PhysicsObject {
     public bool outOfBounds { get; set; }
     public Transform spawnPoint;
     public Text scoreText;
+    public Transform sword;
 
     private int playerScore;
     private bool lockMovement = false;
@@ -38,6 +39,8 @@ public class PlayerPlatformerController : PhysicsObject {
         respawnClip = GetAnimationClip("Respawn");
         hurtClip = GetAnimationClip("Hurt");
         scoreText.text = "Score: 0000";
+
+        sword.transform.GetComponent<BoxCollider2D>().enabled = false;
     }
 
 	void setHealth(){
@@ -92,7 +95,8 @@ public class PlayerPlatformerController : PhysicsObject {
             setHealth();
             animator.SetTrigger("takingDamage");
             lockMovement = true;
-            StartCoroutine(hurt());
+            Rigidbody2D rb = transform.GetComponent<Rigidbody2D>();
+            StartCoroutine(hurt(rb));
         }
 
         if (outOfBounds)
@@ -108,10 +112,26 @@ public class PlayerPlatformerController : PhysicsObject {
         }
     }
 
-    IEnumerator hurt()
+    // TODO Fix the issue where the velocity drops off after the hurting animation ends.
+    IEnumerator hurt(Rigidbody2D rb)
     {
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        if (!this.spriteRenderer.flipX)
+        {
+            rb.AddForce(-1 * transform.right * 10, ForceMode2D.Impulse);
+        } else
+        {
+            rb.AddForce(transform.right * 10, ForceMode2D.Impulse);
+        }
+
+        rb.AddForce(transform.up * 15, ForceMode2D.Impulse);
+        
         yield return new WaitForSeconds(hurtClip.length);
         lockMovement = false;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+
     }
 
     IEnumerator respawn()
@@ -174,16 +194,26 @@ public class PlayerPlatformerController : PhysicsObject {
 
             animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
 
-            if (Input.GetMouseButtonDown(0)) { attacking = true; velocity.x = 0; }
-            else attacking = false;
-
-            animator.SetBool("attacking", attacking);
+            if (Input.GetMouseButtonDown(0))
+            {
+                animator.SetTrigger("attacking");
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                StartCoroutine(swordAttack());
+            }
+            
 
             animator.SetBool("grounded", grounded);
 
 
             targetVelocity = move * maxSpeed;
         }
+    }
+
+    IEnumerator swordAttack()
+    {
+        sword.transform.GetComponent<BoxCollider2D>().enabled = true;
+        yield return new WaitForSeconds(GetAnimationClip("Attacking").length);
+        sword.transform.GetComponent<BoxCollider2D>().enabled = false;
     }
 
     private void OnTriggerStay2D(Collider2D collision)

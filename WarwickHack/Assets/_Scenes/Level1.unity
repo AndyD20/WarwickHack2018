@@ -113,6 +113,72 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &87586207
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 87586208}
+  - component: {fileID: 87586209}
+  - component: {fileID: 87586210}
+  m_Layer: 8
+  m_Name: Sword
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &87586208
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 87586207}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.72, y: -0.67, z: 0}
+  m_LocalScale: {x: 0.45, y: 1.3374994, z: 1}
+  m_Children: []
+  m_Father: {fileID: 435538436}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &87586209
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 87586207}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.8192189, y: 0.22777735}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2.6384382, y: 1.1351418}
+  m_EdgeRadius: 0
+--- !u!114 &87586210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 87586207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e228bf8ab8bf0fc4dbb98ac677a5f516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &232829186
 GameObject:
   m_ObjectHideFlags: 0
@@ -3543,7 +3609,6 @@ GameObject:
   - component: {fileID: 435538437}
   - component: {fileID: 435538439}
   - component: {fileID: 435538438}
-  - component: {fileID: 435538440}
   m_Layer: 8
   m_Name: Knight
   m_TagString: Player
@@ -3621,7 +3686,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -41, y: 0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 87586208}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3682,20 +3748,7 @@ MonoBehaviour:
   healthBar: {fileID: 437325020}
   spawnPoint: {fileID: 813484320}
   scoreText: {fileID: 731273812}
---- !u!111 &435538440
-Animation:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 435538433}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 266f8d27771a9004da74ee55195bdf4e, type: 2}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  sword: {fileID: 87586208}
 --- !u!1 &437325020
 GameObject:
   m_ObjectHideFlags: 0
@@ -5409,7 +5462,7 @@ GameObject:
   - component: {fileID: 1959418320}
   m_Layer: 0
   m_Name: FrogController
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5463,6 +5516,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0078c56d6dcfbb047b599f7c4586df64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthAmount: 1
+  scoreValue: 100
+  animator: {fileID: 659526708}
+  parent_object: {fileID: 2036881294}
+  player: {fileID: 435538439}
 --- !u!1 &1999380491
 GameObject:
   m_ObjectHideFlags: 0
@@ -5646,7 +5704,7 @@ GameObject:
   - component: {fileID: 2036881294}
   m_Layer: 8
   m_Name: Frog
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
