@@ -8,7 +8,6 @@ public class SwordController : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
         if (collision.tag == "Enemy" && !attackCooldown)
         {
             GameEnemy enemy = collision.transform.GetComponent<GameEnemy>();
@@ -19,8 +18,6 @@ public class SwordController : MonoBehaviour {
             }
 
             StartCoroutine(Cooldown());
-
-            Debug.Log("Attack succeed");
         }
     }
 

@@ -9,6 +9,16 @@ public class GameEnemy : MonoBehaviour {
     public Animator animator;
     public Transform parent_object;
     public PlayerPlatformerController player;
+    public SpriteRenderer enemySprite;
+    public Rigidbody2D enemyRb;
+
+    private bool isMoving = false;
+    private bool isGrounded = true;
+
+    private void Start()
+    {
+        enemyRb.freezeRotation = true;
+    }
 
     private void Update()
     {
@@ -17,6 +27,35 @@ public class GameEnemy : MonoBehaviour {
             StartCoroutine(Die());
             healthAmount = 10000;
         }
+
+        if (enemyRb.velocity.y == 0)
+        {
+            isGrounded = true;
+        }
+
+        int movementState = Random.Range(0, 99);
+
+        if (movementState == 0 && !isMoving && isGrounded)
+        {
+            enemySprite.flipX = false;
+            StartCoroutine(Move(new Vector2(-5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
+        }
+        else if (movementState == 1 && !isMoving && isGrounded)
+        {
+            enemySprite.flipX = true;
+            StartCoroutine(Move(new Vector2(5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
+        }
+
+        
+    }
+
+    IEnumerator Move(Vector2 velocity)
+    {
+        isMoving = true;
+        animator.SetTrigger("jump");
+        enemyRb.velocity = velocity;
+        yield return new WaitForSeconds(GetAnimationClip("Jump").length + GetAnimationClip("Land").length);
+        isMoving = false;
     }
 
     IEnumerator Die()
@@ -32,6 +71,9 @@ public class GameEnemy : MonoBehaviour {
             }
 
             Destroy(parent_object.gameObject);
+        } else
+        {
+            Destroy(transform.gameObject);
         }
         
         if (player) { player.scorePoints(scoreValue); }
@@ -46,10 +88,10 @@ public class GameEnemy : MonoBehaviour {
         }
     }
 
+    
+
     public void takeDamage()
     {
-        Debug.Log(string.Format("{0} - Taking damage", this.name));
-
         healthAmount -= 1;
     }
 

@@ -181,6 +181,7 @@ public class PlayerPlatformerController : PhysicsObject {
                 if (spriteRenderer.flipX == true)
                 {
                     spriteRenderer.flipX = false;
+                    sword.GetComponent<BoxCollider2D>().offset = new Vector2(0.8f, 0.2f);
                 }
             }
             else if (move.x < -0.01f)
@@ -188,6 +189,7 @@ public class PlayerPlatformerController : PhysicsObject {
                 if (spriteRenderer.flipX == false)
                 {
                     spriteRenderer.flipX = true;
+                    sword.GetComponent<BoxCollider2D>().offset = new Vector2(-3.5f, 0.2f);
                 }
             }
 
@@ -211,6 +213,7 @@ public class PlayerPlatformerController : PhysicsObject {
 
     IEnumerator swordAttack()
     {
+        yield return new WaitForSeconds(0.2f);
         sword.transform.GetComponent<BoxCollider2D>().enabled = true;
         yield return new WaitForSeconds(GetAnimationClip("Attacking").length);
         sword.transform.GetComponent<BoxCollider2D>().enabled = false;

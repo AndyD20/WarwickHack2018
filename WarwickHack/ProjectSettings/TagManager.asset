@@ -6,6 +6,10 @@ TagManager:
   tags:
   - platform
   - Enemy
+  - Floor
+  - Prop
+  - EnemyBoundary
+  - Weapon
   layers:
   - Default
   - TransparentFX
