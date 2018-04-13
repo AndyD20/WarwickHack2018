@@ -14,6 +14,7 @@ public class GameEnemy : MonoBehaviour {
 
     private bool isMoving = false;
     private bool isGrounded = true;
+    private bool isDying = false;
 
     private void Start()
     {
@@ -35,18 +36,23 @@ public class GameEnemy : MonoBehaviour {
 
         int movementState = Random.Range(0, 99);
 
-        if (movementState == 0 && !isMoving && isGrounded)
+        if (movementState == 0 && !isMoving && isGrounded && !isDying)
         {
             enemySprite.flipX = false;
             StartCoroutine(Move(new Vector2(-5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
         }
-        else if (movementState == 1 && !isMoving && isGrounded)
+        else if (movementState == 1 && !isMoving && isGrounded && !isDying)
         {
             enemySprite.flipX = true;
             StartCoroutine(Move(new Vector2(5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
         }
 
         
+    }
+    
+    void LateUpdate()
+    {
+        if (isDying) enemyRb.velocity = Vector2.zero;
     }
 
     IEnumerator Move(Vector2 velocity)
@@ -60,6 +66,8 @@ public class GameEnemy : MonoBehaviour {
 
     IEnumerator Die()
     {
+        isDying = true;
+
         animator.SetTrigger("dying");
         yield return new WaitForSeconds(GetAnimationClip("Dying").length);
 
@@ -81,7 +89,7 @@ public class GameEnemy : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
+        if (collision.tag == "Player" && !isDying)
         {
             PlayerPlatformerController player = collision.GetComponent<PlayerPlatformerController>();
             player.damaged = true;

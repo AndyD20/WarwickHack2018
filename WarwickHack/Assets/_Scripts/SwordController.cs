@@ -12,8 +12,14 @@ public class SwordController : MonoBehaviour {
         {
             GameEnemy enemy = collision.transform.GetComponent<GameEnemy>();
 
+            if (!enemy)
+            {
+                enemy = collision.transform.GetComponentInChildren<GameEnemy>();
+            }
+
             if (enemy)
             {
+                Debug.Log("Enemy taking damage");
                 enemy.takeDamage();
             }
 

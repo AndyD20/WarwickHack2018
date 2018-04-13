@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerPlatformerController : PhysicsObject {
 
     public float maxSpeed = 7;
     public float jumpTakeOffSpeed = 7;
-    public float maxHealth = 5;
+    public float maxHealth = 8;
     public Transform heart;
     public Transform emptyHeart;
     public GameObject healthBar;
@@ -24,14 +25,19 @@ public class PlayerPlatformerController : PhysicsObject {
     private Animator animator;
     private AnimationClip respawnClip;
     private AnimationClip hurtClip;
+    private bool beingHurt = false;
 
     protected bool attacking;
 
-    // Use this for initialization
     void Awake () 
     {
         spriteRenderer = GetComponent<SpriteRenderer> (); 
         animator = GetComponent<Animator> ();
+
+        int healthModifier = PlayerPrefs.GetInt("difficulty", 1);
+        Debug.Log(string.Format("Health Modifier - {0}", healthModifier));
+
+        maxHealth = (int)(maxHealth / healthModifier);
         currentHealth = maxHealth;
 		setHealth ();
 
@@ -88,7 +94,7 @@ public class PlayerPlatformerController : PhysicsObject {
     protected override void FrameCalculations()
     {
 
-        if (damaged)
+        if (damaged && !beingHurt)
         {
             currentHealth -= 1;
             damaged = false;
@@ -115,6 +121,8 @@ public class PlayerPlatformerController : PhysicsObject {
     // TODO Fix the issue where the velocity drops off after the hurting animation ends.
     IEnumerator hurt(Rigidbody2D rb)
     {
+        beingHurt = true;
+
         rb.bodyType = RigidbodyType2D.Dynamic;
         if (!this.spriteRenderer.flipX)
         {
@@ -125,13 +133,21 @@ public class PlayerPlatformerController : PhysicsObject {
         }
 
         rb.AddForce(transform.up * 15, ForceMode2D.Impulse);
-        
+
         yield return new WaitForSeconds(hurtClip.length);
+
+        if (!grounded)
+        {
+            yield return new WaitForSeconds(1);
+        }
+
         lockMovement = false;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0;
         rb.bodyType = RigidbodyType2D.Kinematic;
 
+        yield return new WaitForSeconds(1);
+        beingHurt = false;
     }
 
     IEnumerator respawn()
