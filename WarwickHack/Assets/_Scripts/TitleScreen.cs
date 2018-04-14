@@ -8,7 +8,13 @@ public class TitleScreen : MonoBehaviour {
     public GameObject[] objectsToDisable;
     public GameObject[] objectsToEnable;
 
-	public void PlayButton()
+    private void Awake()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+    }
+
+    public void PlayButton()
     {
         foreach(GameObject obj in objectsToDisable)
         {

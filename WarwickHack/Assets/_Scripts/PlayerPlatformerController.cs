@@ -17,6 +17,7 @@ public class PlayerPlatformerController : PhysicsObject {
     public Transform spawnPoint;
     public Text scoreText;
     public Transform sword;
+    public Cinemachine.CinemachineVirtualCamera cam;
 
     private int playerScore;
     private bool lockMovement = false;
@@ -31,6 +32,9 @@ public class PlayerPlatformerController : PhysicsObject {
 
     void Awake () 
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
+
         spriteRenderer = GetComponent<SpriteRenderer> (); 
         animator = GetComponent<Animator> ();
 
@@ -93,9 +97,18 @@ public class PlayerPlatformerController : PhysicsObject {
 
     protected override void FrameCalculations()
     {
+        /*
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            cam.LookAt(Input.mousePosition);
+        }
+        */
+
 
         if (damaged && !beingHurt)
         {
+            beingHurt = true;
+
             currentHealth -= 1;
             damaged = false;
             setHealth();
@@ -105,7 +118,7 @@ public class PlayerPlatformerController : PhysicsObject {
             StartCoroutine(hurt(rb));
         }
 
-        if (outOfBounds)
+        if (outOfBounds && !beingHurt && !damaged)
         {
             animator.SetTrigger("respawning");
             currentHealth -= 1;
@@ -121,8 +134,6 @@ public class PlayerPlatformerController : PhysicsObject {
     // TODO Fix the issue where the velocity drops off after the hurting animation ends.
     IEnumerator hurt(Rigidbody2D rb)
     {
-        beingHurt = true;
-
         rb.bodyType = RigidbodyType2D.Dynamic;
         if (!this.spriteRenderer.flipX)
         {
