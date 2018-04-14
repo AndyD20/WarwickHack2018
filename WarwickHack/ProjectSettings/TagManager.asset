@@ -10,6 +10,7 @@ TagManager:
   - Prop
   - EnemyBoundary
   - Weapon
+  - Background
   layers:
   - Default
   - TransparentFX

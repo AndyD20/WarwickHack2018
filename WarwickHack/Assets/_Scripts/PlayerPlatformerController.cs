@@ -154,10 +154,10 @@ public class PlayerPlatformerController : PhysicsObject {
             yield return new WaitForSeconds(1);
         }
 
-        lockMovement = false;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0;
         rb.bodyType = RigidbodyType2D.Kinematic;
+        lockMovement = false;
 
         yield return new WaitForSeconds(1);
         beingHurt = false;
@@ -253,6 +253,21 @@ public class PlayerPlatformerController : PhysicsObject {
         if (collision.gameObject.tag == "platform")
         {
             transform.parent = collision.transform;
+        }
+
+        if (beingHurt && collision.gameObject.tag != "Background")
+        {
+            Debug.Log("Stopping");
+
+            Rigidbody2D rb = transform.GetComponent<Rigidbody2D>();
+
+            if (rb)
+            {
+                rb.velocity = Vector2.zero;
+                rb.angularVelocity = 0;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+                lockMovement = false;
+            }
         }
     }
 

@@ -19,17 +19,11 @@ public class SwordController : MonoBehaviour {
 
             if (enemy.Length > 0)
             {
-                
-
                 foreach (GameEnemy e in enemy)
                 {
-                    Debug.Log(e);
-
                     e.takeDamage();
                 }
-                
             }
-
             StartCoroutine(Cooldown());
         }
     }
