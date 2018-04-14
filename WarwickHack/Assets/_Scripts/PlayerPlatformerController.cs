@@ -39,7 +39,6 @@ public class PlayerPlatformerController : PhysicsObject {
         animator = GetComponent<Animator> ();
 
         int healthModifier = PlayerPrefs.GetInt("difficulty", 1);
-        Debug.Log(string.Format("Health Modifier - {0}", healthModifier));
 
         maxHealth = (int)(maxHealth / healthModifier);
         currentHealth = maxHealth;
@@ -118,11 +117,14 @@ public class PlayerPlatformerController : PhysicsObject {
             StartCoroutine(hurt(rb));
         }
 
-        if (outOfBounds && !beingHurt && !damaged)
+        if (outOfBounds)
         {
             animator.SetTrigger("respawning");
-            currentHealth -= 1;
-            setHealth();
+            if (!beingHurt && !damaged)
+            {
+                currentHealth -= 1;
+                setHealth();
+            }
             lockMovement = true;
             transform.position = spawnPoint.transform.position;
             this.spriteRenderer.flipX = false;
@@ -223,7 +225,7 @@ public class PlayerPlatformerController : PhysicsObject {
 
             animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Z))
             {
                 animator.SetTrigger("attacking");
                 GetComponent<Rigidbody2D>().velocity = Vector2.zero;

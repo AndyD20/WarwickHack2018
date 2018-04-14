@@ -11,6 +11,7 @@ public class GameEnemy : MonoBehaviour {
     public PlayerPlatformerController player;
     public SpriteRenderer enemySprite;
     public Rigidbody2D enemyRb;
+    public bool isForTest = false;
 
     private bool isMoving = false;
     private bool isGrounded = true;
@@ -34,20 +35,22 @@ public class GameEnemy : MonoBehaviour {
             isGrounded = true;
         }
 
-        int movementState = Random.Range(0, 99);
 
-        if (movementState == 0 && !isMoving && isGrounded && !isDying)
+        if (!isForTest)
         {
-            enemySprite.flipX = false;
-            StartCoroutine(Move(new Vector2(-5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
-        }
-        else if (movementState == 1 && !isMoving && isGrounded && !isDying)
-        {
-            enemySprite.flipX = true;
-            StartCoroutine(Move(new Vector2(5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
-        }
+            int movementState = Random.Range(0, 99);
 
-        
+            if (movementState == 0 && !isMoving && isGrounded && !isDying)
+            {
+                enemySprite.flipX = false;
+                StartCoroutine(Move(new Vector2(-5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
+            }
+            else if (movementState == 1 && !isMoving && isGrounded && !isDying)
+            {
+                enemySprite.flipX = true;
+                StartCoroutine(Move(new Vector2(5 + Random.Range(-2, 2), 5 + Random.Range(-1, 1))));
+            }
+        }
     }
     
     void LateUpdate()

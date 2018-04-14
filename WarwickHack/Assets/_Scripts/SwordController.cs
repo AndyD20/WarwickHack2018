@@ -10,17 +10,24 @@ public class SwordController : MonoBehaviour {
     {
         if (collision.tag == "Enemy" && !attackCooldown)
         {
-            GameEnemy enemy = collision.transform.GetComponent<GameEnemy>();
+            GameEnemy[] enemy = collision.transform.GetComponents<GameEnemy>();
 
-            if (!enemy)
+            if (enemy.Length > 0)
             {
-                enemy = collision.transform.GetComponentInChildren<GameEnemy>();
+                enemy = collision.transform.GetComponentsInChildren<GameEnemy>();
             }
 
-            if (enemy)
+            if (enemy.Length > 0)
             {
-                Debug.Log("Enemy taking damage");
-                enemy.takeDamage();
+                
+
+                foreach (GameEnemy e in enemy)
+                {
+                    Debug.Log(e);
+
+                    e.takeDamage();
+                }
+                
             }
 
             StartCoroutine(Cooldown());
@@ -29,6 +36,7 @@ public class SwordController : MonoBehaviour {
 
     IEnumerator Cooldown()
     {
+        yield return new WaitForSeconds(0.2f);
         attackCooldown = true;
         yield return new WaitForSeconds(1);
         attackCooldown = false;
