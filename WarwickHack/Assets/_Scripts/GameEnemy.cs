@@ -87,7 +87,7 @@ public class GameEnemy : MonoBehaviour {
             Destroy(transform.gameObject);
         }
         
-        if (player) { player.scorePoints(scoreValue); }
+        if (player) { player.ScorePoints(scoreValue); }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -95,7 +95,7 @@ public class GameEnemy : MonoBehaviour {
         if (collision.tag == "Player" && !isDying)
         {
             PlayerPlatformerController player = collision.GetComponent<PlayerPlatformerController>();
-            player.damaged = true;
+            player.Damaged = true;
         }
     }
 

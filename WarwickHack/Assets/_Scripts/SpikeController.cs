@@ -11,7 +11,7 @@ public class SpikeController : MonoBehaviour {
         if (collision.tag == "Player" && !isSpiking)
         {
             isSpiking = true;
-            collision.GetComponent<PlayerPlatformerController>().damaged = true;
+            collision.GetComponent<PlayerPlatformerController>().Damaged = true;
         }
     }
 

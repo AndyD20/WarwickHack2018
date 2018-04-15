@@ -12,7 +12,12 @@ public class Checkpoint : MonoBehaviour {
     {
         if (collision.tag == "Player" && !active)
         {
+            active = true;
             spawnPoint.position = transform.position;
+
+
+            PlayerPlatformerController player = collision.GetComponent<PlayerPlatformerController>();
+            player.RestoreLife(player.maxHealth - player.CurrentHealth);
         }
     }
 }

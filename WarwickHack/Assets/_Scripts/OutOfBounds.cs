@@ -19,7 +19,7 @@ public class OutOfBounds : MonoBehaviour {
         if (collision.tag == "Player")
         {
             PlayerPlatformerController player = collision.GetComponent<PlayerPlatformerController>();
-            player.outOfBounds = true;
+            player.OutOfBounds = true;
         }
     }
 }

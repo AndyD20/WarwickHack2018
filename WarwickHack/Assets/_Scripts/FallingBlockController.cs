@@ -18,14 +18,6 @@ public class FallingBlockController : MonoBehaviour {
         originalRotation = transform.rotation;
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(1) && !isFalling)
-        {
-            StartCoroutine(BlockFall());
-        }
-    }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.transform.tag == "Player" && !isFalling)

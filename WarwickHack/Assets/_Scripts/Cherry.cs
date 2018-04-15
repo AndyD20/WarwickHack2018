@@ -22,7 +22,7 @@ public class Cherry : MonoBehaviour {
         if (collision.tag == "Player")
         {
             PlayerPlatformerController player = collision.GetComponent<PlayerPlatformerController>();
-            player.scorePoints(100);
+            player.ScorePoints(100);
             Destroy(this.gameObject);
         }
     }

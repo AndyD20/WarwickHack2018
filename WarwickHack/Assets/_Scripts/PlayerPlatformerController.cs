@@ -8,20 +8,21 @@ public class PlayerPlatformerController : PhysicsObject {
 
     public float maxSpeed = 7;
     public float jumpTakeOffSpeed = 7;
-    public float maxHealth = 8;
+    public int maxHealth = 8;
     public Transform heart;
     public Transform emptyHeart;
     public GameObject healthBar;
-    public bool damaged { get; set; }
-    public bool outOfBounds { get; set; }
     public Transform spawnPoint;
     public Text scoreText;
     public Transform sword;
-    public Cinemachine.CinemachineVirtualCamera cam;
+    public DeathScreenController deathScreen;
+
+    public bool Damaged { get; set; }
+    public bool OutOfBounds { get; set; }
+    public int CurrentHealth { get; set; }
 
     private int playerScore;
     private bool lockMovement = false;
-    private float currentHealth = 0;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private AnimationClip respawnClip;
@@ -41,8 +42,8 @@ public class PlayerPlatformerController : PhysicsObject {
         int healthModifier = PlayerPrefs.GetInt("difficulty", 1);
 
         maxHealth = (int)(maxHealth / healthModifier);
-        currentHealth = maxHealth;
-		setHealth ();
+        CurrentHealth = maxHealth;
+		SetHealth ();
 
 
         respawnClip = GetAnimationClip("Respawn");
@@ -52,95 +53,103 @@ public class PlayerPlatformerController : PhysicsObject {
         sword.transform.GetComponent<BoxCollider2D>().enabled = false;
     }
 
-	void setHealth(){
+	void SetHealth(){
 
-        foreach(Transform child in healthBar.transform)
+        if (CurrentHealth > -1)
         {
-            GameObject.Destroy(child.gameObject);
-        }
 
-        float pos = heart.GetComponent<RectTransform>().rect.width;
-        float offset = pos;
-
-		for (int i = 0; i < currentHealth; i++) {
-            Transform newHeart = Instantiate(heart, healthBar.transform);
-
-            if (i != 0)
+            foreach (Transform child in healthBar.transform)
             {
-                newHeart.transform.Translate(pos, 0, 0);
-                pos += offset;
-            }
-        }
-
-        int difference = (int)(maxHealth - currentHealth);
-
-        if (difference <= 0) return;
-
-        for (int i = 0; i < difference; i++)
-        {
-            Transform newEmptyHeart = Instantiate(emptyHeart, healthBar.transform);
-
-            if (currentHealth > 0)
-            {
-                newEmptyHeart.transform.Translate(pos, 0, 0);
-                pos += offset;
-            }
-            else if (i != 0)
-            {
-                newEmptyHeart.transform.Translate(pos, 0, 0);
-                pos += offset;
+                GameObject.Destroy(child.gameObject);
             }
 
+            float pos = heart.GetComponent<RectTransform>().rect.width;
+            float offset = pos;
+
+            for (int i = 0; i < CurrentHealth; i++)
+            {
+                Transform newHeart = Instantiate(heart, healthBar.transform);
+
+                if (i != 0)
+                {
+                    newHeart.transform.Translate(pos, 0, 0);
+                    pos += offset;
+                }
+            }
+
+            int difference = (int)(maxHealth - CurrentHealth);
+
+            if (difference <= 0) return;
+
+            for (int i = 0; i < difference; i++)
+            {
+                Transform newEmptyHeart = Instantiate(emptyHeart, healthBar.transform);
+
+                if (CurrentHealth > 0)
+                {
+                    newEmptyHeart.transform.Translate(pos, 0, 0);
+                    pos += offset;
+                }
+                else if (i != 0)
+                {
+                    newEmptyHeart.transform.Translate(pos, 0, 0);
+                    pos += offset;
+                }
+
+            }
         }
 	}
 
     protected override void FrameCalculations()
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (CurrentHealth > 0)
         {
-            cam.LookAt(Input.mousePosition);
-        }
-        */
-
-
-        if (damaged && !beingHurt)
-        {
-            beingHurt = true;
-
-            currentHealth -= 1;
-            damaged = false;
-            setHealth();
-            animator.SetTrigger("takingDamage");
-            lockMovement = true;
-            Rigidbody2D rb = transform.GetComponent<Rigidbody2D>();
-            StartCoroutine(hurt(rb));
-        }
-
-        if (outOfBounds)
-        {
-            animator.SetTrigger("respawning");
-            if (!beingHurt && !damaged)
+            if (Damaged && !beingHurt)
             {
-                currentHealth -= 1;
-                setHealth();
+                beingHurt = true;
+
+                CurrentHealth -= 1;
+                Damaged = false;
+                SetHealth();
+                animator.SetTrigger("takingDamage");
+                lockMovement = true;
+                Rigidbody2D rb = transform.GetComponent<Rigidbody2D>();
+                StartCoroutine(Hurt(rb));
             }
-            lockMovement = true;
-            transform.position = spawnPoint.transform.position;
-            this.spriteRenderer.flipX = false;
-            StartCoroutine(respawn());
-            outOfBounds = false;
+
+            if (OutOfBounds)
+            {
+                OutOfBounds = false;
+                animator.SetTrigger("respawning");
+                if (!beingHurt && !Damaged)
+                {
+                    CurrentHealth -= 1;
+                    SetHealth();
+                }
+                lockMovement = true;
+                transform.position = spawnPoint.transform.position;
+                this.spriteRenderer.flipX = false;
+                StartCoroutine(Respawn());
+            }
+        } else
+        {
+            animator.SetTrigger("dying");
+            if (OutOfBounds) gameObject.SetActive(false);
+
+            CurrentHealth -= 1;
+            SetHealth();
+            deathScreen.PlayerDeath();
         }
     }
 
-    // TODO Fix the issue where the velocity drops off after the hurting animation ends.
-    IEnumerator hurt(Rigidbody2D rb)
-    {
+    IEnumerator Hurt(Rigidbody2D rb)
+    {        
         rb.bodyType = RigidbodyType2D.Dynamic;
         if (!this.spriteRenderer.flipX)
         {
             rb.AddForce(-1 * transform.right * 10, ForceMode2D.Impulse);
-        } else
+        }
+        else
         {
             rb.AddForce(transform.right * 10, ForceMode2D.Impulse);
         }
@@ -159,14 +168,29 @@ public class PlayerPlatformerController : PhysicsObject {
         rb.bodyType = RigidbodyType2D.Kinematic;
         lockMovement = false;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(3);
         beingHurt = false;
     }
 
-    IEnumerator respawn()
+    IEnumerator Respawn()
     {
         yield return new WaitForSeconds(respawnClip.length);
-        lockMovement = false;
+        lockMovement = false;        
+    }
+
+    public void RestoreLife(int amount)
+    {
+        StartCoroutine(RefillHearts(amount));
+    }
+
+    IEnumerator RefillHearts(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            CurrentHealth += 1;
+            SetHealth();
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     public AnimationClip GetAnimationClip(string name)
@@ -229,7 +253,7 @@ public class PlayerPlatformerController : PhysicsObject {
             {
                 animator.SetTrigger("attacking");
                 GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-                StartCoroutine(swordAttack());
+                StartCoroutine(SwordAttack());
             }
             
 
@@ -240,7 +264,7 @@ public class PlayerPlatformerController : PhysicsObject {
         }
     }
 
-    IEnumerator swordAttack()
+    IEnumerator SwordAttack()
     {
         yield return new WaitForSeconds(0.2f);
         sword.transform.GetComponent<BoxCollider2D>().enabled = true;
@@ -279,9 +303,15 @@ public class PlayerPlatformerController : PhysicsObject {
         }
     }
 
-    public void scorePoints(int points)
+    public void ScorePoints(int points)
     {
         playerScore += points;
         scoreText.text = string.Format("Score: {0:0000}", playerScore);
+    }
+
+    public void WinLevel()
+    {
+        lockMovement = true;
+        animator.SetTrigger("winning");
     }
 }
