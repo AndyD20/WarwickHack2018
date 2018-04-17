@@ -6,12 +6,12 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour {
 
     private Text timer;
-    private int seconds;
+    public int Seconds { get; set; }
 
 	// Use this for initialization
 	void Start () {
         timer = GetComponent<Text>();
-        seconds = 0;
+        Seconds = 0;
         InvokeRepeating("UpdateTimer", 0, 1f);
 	}
 	
@@ -22,7 +22,7 @@ public class Timer : MonoBehaviour {
 
     private void UpdateTimer()
     {
-        seconds += 1;
-        timer.text = string.Format("Time: {0:00}:{1:00}", seconds / 60, seconds % 60);
+        Seconds += 1;
+        timer.text = string.Format("Time: {0:00}:{1:00}", Seconds / 60, Seconds % 60);
     }
 }

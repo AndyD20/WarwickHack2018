@@ -20,8 +20,8 @@ public class PlayerPlatformerController : PhysicsObject {
     public bool Damaged { get; set; }
     public bool OutOfBounds { get; set; }
     public int CurrentHealth { get; set; }
+    public int PlayerScore { get; set; }
 
-    private int playerScore;
     private bool lockMovement = false;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
@@ -281,7 +281,6 @@ public class PlayerPlatformerController : PhysicsObject {
 
         if (beingHurt && collision.gameObject.tag != "Background")
         {
-            Debug.Log("Stopping");
 
             Rigidbody2D rb = transform.GetComponent<Rigidbody2D>();
 
@@ -305,8 +304,8 @@ public class PlayerPlatformerController : PhysicsObject {
 
     public void ScorePoints(int points)
     {
-        playerScore += points;
-        scoreText.text = string.Format("Score: {0:0000}", playerScore);
+        PlayerScore += points;
+        scoreText.text = string.Format("Score: {0:0000}", PlayerScore);
     }
 
     public void WinLevel()

@@ -22,14 +22,6 @@ public class DeathScreenController : MonoBehaviour {
         gameOverText.color = c;
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            PlayerDeath();
-        }
-    }
-
     public void PlayerDeath()
     {
         deathScreen.DOFade(1, 3);
